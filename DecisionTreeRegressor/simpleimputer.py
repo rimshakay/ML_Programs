@@ -12,10 +12,14 @@ test_file="data/titanic_data/test.csv"
 train_data=pd.read_csv(train_csv)
 test_data=pd.read_csv(test_file)
 
-columns=['Pclass','Age','Fare']
+columns=['Pclass','Age', 'Sex', 'Fare']
 train_Y=train_data.Survived
 train_X=train_data[columns]
+train_X.loc[train_X['Sex'] == 'female', 'Sex'] = 0
+train_X.loc[train_X['Sex'] == 'male', 'Sex'] = 1
 test_X=test_data[columns]
+test_X.loc[test_X['Sex'] == 'female', 'Sex'] = 0
+test_X.loc[test_X['Sex'] == 'male', 'Sex'] = 1
 
 imputer=SimpleImputer()
 imputed_train_X=pd.DataFrame(imputer.fit_transform(train_X))
