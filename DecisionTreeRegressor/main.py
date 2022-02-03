@@ -1,12 +1,17 @@
+from matplotlib.pyplot import axis
 from sklearn.model_selection import train_test_split
 import numpy as np
 import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
 
-current_population_path="DecisionTreeRegressor/archive/CurrentPopulationSurvey.csv"
-income_dynamic_path="DecisionTreeRegressor/archive/PanelStudyIncomeDynamics.csv"
+train_csv="DecisionTreeRegressor/data/train.csv"
+test_file="DecisionTreeRegressor/data/test.csv"
 
-population_df=pd.read_csv(current_population_path)
-income_df=pd.read_csv(income_dynamic_path)
+train_data=pd.read_csv(train_csv)
+test_data=pd.read_csv(test_file)
 
-train_X, val_X, train_y, val_y = train_test_split()
+train_Y=train_data.Survived
+train_X=train_data.drop(['Survived'],axis=1)
+
+
 
