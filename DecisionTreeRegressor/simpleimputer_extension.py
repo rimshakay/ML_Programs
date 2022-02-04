@@ -21,6 +21,16 @@ test_X=test_data[columns]
 test_X.loc[test_X['Sex'] == 'female', 'Sex'] = 0
 test_X.loc[test_X['Sex'] == 'male', 'Sex'] = 1
 
+cols_with_missing = [col for col in train_X.columns
+                     if train_X[col].isnull().any()]
+                     
+train_X_plus = train_X.copy()
+test_X_plus = test_X.copy()
+
+for col in cols_with_missing:
+    train_X_plus[col+ '_was_missing'] = train_X_plus[col].isnull()
+    test_X_plus[col+ '_was_missing'] = test_X_plus[col].isnull()
+
 imputer=SimpleImputer()
 imputed_train_X=pd.DataFrame(imputer.fit_transform(train_X))
 imputed_test_X=pd.DataFrame(imputer.transform(test_X))
