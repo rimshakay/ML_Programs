@@ -91,6 +91,8 @@ class myRandomForest:
 # call1.startPipeline()
 
 #Store sales competition
-call1=myRandomForest("data/store-sales-time-series-forecasting/train.csv","data/store-sales-time-series-forecasting/test.csv","sales","id")
-call1.startPipeline()
+def checkSales():
+    # call1=myRandomForest("data/store-sales-time-series-forecasting/train.csv","data/store-sales-time-series-forecasting/test.csv","sales","id")
+    # call1.startPipeline()
+    print("yay")
 
