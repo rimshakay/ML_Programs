@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestRegressor
 # from sklearn.metrics import mean_absolute_error
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 
 class myRandomForest:
 
@@ -17,64 +17,80 @@ class myRandomForest:
         self.prediction_column=prediction_column
         self.prediction_key=prediction_key
 
-    def startPipeline(self):
-
+    def get_info(self):
         train_csv=self.train_file
-        test_file=self.test_file
         prediction_column=self.prediction_column
-        prediction_key=self.prediction_key
 
         train_data=pd.read_csv(train_csv)
-        test_data=pd.read_csv(test_file)
-
-        #SibSp and Parch does not help
-        # columns=['Pclass','Age','Fare']
 
         train_Y=train_data[prediction_column]
         train_X=train_data.drop([prediction_column],axis=1)
 
         numerical_cols=[cname for cname in train_X.columns if
                                 train_X[cname].dtype in ['int64','float64']]
-        low_cardinality_cols = [cname for cname in train_X.columns if train_X[cname].nunique() < 10 and 
+        print("Numerical columns:  "+",".join(numerical_cols))
+
+        low_cardinality_cols = [cname for cname in train_X.columns if train_X[cname].nunique() < 8 and 
                                 train_X[cname].dtype == "object"]
-        high_cardinality_cols= [cname for cname in train_X.columns if train_X[cname].nunique() > 10 and 
+        print("Low Cardinality columns:  "+",".join(low_cardinality_cols))
+
+        high_cardinality_cols= [cname for cname in train_X.columns if train_X[cname].nunique() > 7 and 
                                 train_X[cname].dtype == "object"]
+        print("High Cardinality columns:  "+",".join(high_cardinality_cols))
 
+        return train_Y,train_X,numerical_cols,low_cardinality_cols,high_cardinality_cols
 
-        train_X=train_data[numerical_cols+low_cardinality_cols]
-        test_X=test_data[numerical_cols+low_cardinality_cols]
+    def startPipeline(self):
+        train_Y,train_X,numerical_cols,low_cardinality_cols,high_cardinality_cols=self.get_info()
 
-        label_X_train=train_X.copy()
-        label_X_test=test_X.copy()
+        train_csv=self.train_file
+        test_file=self.test_file
+        prediction_column=self.prediction_column
+        prediction_key=self.prediction_key
 
-        # label_X_train=label_X_train.drop(high_cardinality_cols,axis=1)
+        test_data=pd.read_csv(test_file)
+
+        train_X=train_X[numerical_cols+low_cardinality_cols+high_cardinality_cols]
+        test_X=test_data[numerical_cols+low_cardinality_cols+high_cardinality_cols]
 
         numerical_transformer=Pipeline([('imputer',SimpleImputer(strategy='median'))])
 
-        categorical_transformer=Pipeline(steps=[('imputer',SimpleImputer(strategy='most_frequent')),('ordinal_encoder',OrdinalEncoder(handle_unknown='ignore'))])
+        ordinal_categorical_transformer=Pipeline(steps=[('imputer',SimpleImputer(strategy='most_frequent')),('ordinal_encoder',OrdinalEncoder(handle_unknown='ignore'))])
+
+        onehot_categorical_transformer=Pipeline(steps=[('imputer',SimpleImputer(strategy='most_frequent')),('onehot',OneHotEncoder(handle_unknown='ignore'))])
 
         preprocessor=ColumnTransformer(transformers=[
             ('num',numerical_transformer,numerical_cols),
-            ('cat',categorical_transformer,low_cardinality_cols)
+            ('ordinal_cat',ordinal_categorical_transformer,high_cardinality_cols),
+            ('onehot_cat',onehot_categorical_transformer,low_cardinality_cols)
         ])
 
-        model=RandomForestRegressor(random_state=1)
-
+        model=RandomForestRegressor(n_estimators=100,random_state=1)
 
         main_pipeline=Pipeline([('preprocessor',preprocessor),
         ('model',model)])
 
         main_pipeline.fit(train_X,train_Y)
 
-        Survival_predictions=main_pipeline.predict(test_X)
+        predictions=main_pipeline.predict(test_X)
 
-        list_of_tuples=list(zip(test_data[prediction_key],Survival_predictions.round().astype(int)))
+        print("Do you want the predictions rounded off to the nearest integer?(y/n)")
+        ans=input()
+
+        if ans=='y':
+            predictions=predictions.round().astype(int)
+
+        list_of_tuples=list(zip(test_data[prediction_key],predictions))
         predictions_df=pd.DataFrame(list_of_tuples,columns=[prediction_key,prediction_column])
 
         folder_path="/".join(train_csv.split("/")[:-1])
         predictions_df.to_csv(folder_path+'/random_forest_predictions.csv',index=False)
 
+#Titanic competition
+# call1=myRandomForest("data/titanic_data/train.csv","data/titanic_data/test.csv","Survived","PassengerId")
+# call1.startPipeline()
 
-call1=myRandomForest("data/titanic_data/train.csv","data/titanic_data/test.csv","Survived","PassengerId")
-
+#Store sales competition
+call1=myRandomForest("data/store-sales-time-series-forecasting/train.csv","data/store-sales-time-series-forecasting/test.csv","sales","id")
 call1.startPipeline()
+
