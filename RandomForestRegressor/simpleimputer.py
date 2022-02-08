@@ -1,5 +1,6 @@
 # from matplotlib.pyplot import axis
 # from sklearn.model_selection import train_test_split
+# from openerp import api,models,fields
 import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
@@ -8,8 +9,11 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+import django
 
+# class myRandomForest(models.Model):
 class myRandomForest:
+    __name__='my.model'
 
     def __init__(self,train_file,test_file,prediction_column,prediction_key=None):
         self.train_file=train_file
@@ -91,8 +95,10 @@ class myRandomForest:
 # call1.startPipeline()
 
 #Store sales competition
-def checkSales():
-    # call1=myRandomForest("data/store-sales-time-series-forecasting/train.csv","data/store-sales-time-series-forecasting/test.csv","sales","id")
-    # call1.startPipeline()
-    print("yay")
+# @api.model
+# def checkSales():
+call1=myRandomForest("data/store-sales-time-series-forecasting/train.csv","data/store-sales-time-series-forecasting/test.csv","sales","id")
+call1.startPipeline()
+    # data={"yay":"no"}
+    # return data
 
