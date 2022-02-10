@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+#virtual env files
+venv/
+
 #Mac auto generated files
 .DS_Store
 ._.DS_Store

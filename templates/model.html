@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{% block title %} {{ model['model'] }} {% endblock %}</h2>
+    <p>{{ model['predictions'] }}</p>
+{% endblock %}
+

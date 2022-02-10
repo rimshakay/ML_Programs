@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS history;
+DROP TABLE IF EXISTS model;
+
+CREATE TABLE model(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    model TEXT NOT NULL,
+    params TEXT,
+    predictions TEXT
+
+);

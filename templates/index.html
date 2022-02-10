@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Test Out Models {% endblock %}</h1>
+    {% for model in models %}
+        
+        <a href="{{ url_for('model', model_id=model['id']) }}">
+            <button>{{ model['model'] }}</button>
+        </a>
+        <!-- <form>
+            <input type="submit" name="go_to_model" value="{{ model['title'] }}">{{ model['title'] }}</button>
+         </form> -->
+         <!-- <a href="{{ url_for('model', model_id=model['id']) }}">
+            {{ model['title'] }}
+        </a> -->
+        <!-- <a href="{{ url_for('model', model_id=model['id']) }}">
+            <h2>{{ model['model'] }}</h2>
+        </a> -->
+        <hr>
+    {% endfor %}
+{% endblock %}

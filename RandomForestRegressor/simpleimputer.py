@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-import django
+import datetime
 
 # class myRandomForest(models.Model):
 class myRandomForest:
@@ -53,6 +53,7 @@ class myRandomForest:
         prediction_key=self.prediction_key
 
         test_data=pd.read_csv(test_file)
+        print("read test csv")
 
         train_X=train_X[numerical_cols+low_cardinality_cols+high_cardinality_cols]
         test_X=test_data[numerical_cols+low_cardinality_cols+high_cardinality_cols]
@@ -70,19 +71,22 @@ class myRandomForest:
         ])
 
         model=RandomForestRegressor(n_estimators=100,random_state=1)
+        print("creating random model")
 
         main_pipeline=Pipeline([('preprocessor',preprocessor),
         ('model',model)])
 
+        print("fitting model")
         main_pipeline.fit(train_X,train_Y)
-
+        
+        print("making predictions")
         predictions=main_pipeline.predict(test_X)
 
-        print("Do you want the predictions rounded off to the nearest integer?(y/n)")
-        ans=input()
+        # print("Do you want the predictions rounded off to the nearest integer?(y/n)")
+        # ans=input()
 
-        if ans=='y':
-            predictions=predictions.round().astype(int)
+        # if ans=='y':
+        predictions=predictions.round().astype(int)
 
         list_of_tuples=list(zip(test_data[prediction_key],predictions))
         predictions_df=pd.DataFrame(list_of_tuples,columns=[prediction_key,prediction_column])
@@ -96,9 +100,17 @@ class myRandomForest:
 
 #Store sales competition
 # @api.model
-# def checkSales():
-call1=myRandomForest("data/store-sales-time-series-forecasting/train.csv","data/store-sales-time-series-forecasting/test.csv","sales","id")
-call1.startPipeline()
+def checkSales():
+    dt_start = datetime.datetime.now().strftime("%H:%M:%S")
+    print("dt_start",dt_start)
+    # call1=myRandomForest("data/store-sales-time-series-forecasting/train.csv","data/store-sales-time-series-forecasting/test.csv","sales","id")
+    # call1.startPipeline()
+    call1=myRandomForest("data/titanic_data/train.csv","data/titanic_data/test.csv","Survived","PassengerId")
+    call1.startPipeline()
+    dt_end = datetime.datetime.now().strftime("%H:%M:%S")
+    print(dt_end)
+
     # data={"yay":"no"}
     # return data
 
+checkSales()

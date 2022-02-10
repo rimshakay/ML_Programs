@@ -1,6 +1,8 @@
 Titanic: https://www.kaggle.com/c/titanic/overview
+Store sales: https://www.kaggle.com/c/store-sales-time-series-forecasting/data
 
 Used:
 
 Decision Tree Regressor
+Random Forest Regressor
 Simple imputer

@@ -1,0 +1,14 @@
+h1 {
+    border: 2px #eee solid;
+    color: brown;
+    text-align: center;
+    padding: 10px;
+}
+
+button{
+    width: 30vh;
+    height: 10vh;
+    padding: 2vh;
+    margin: 2vh;
+    font-size: 20px;
+}
