@@ -2,20 +2,21 @@
 
 {% block content %}
     <h1>{% block title %} Test Out Models {% endblock %}</h1>
-    {% for model in models %}
-        
-        <a href="{{ url_for('model', model_id=model['id']) }}">
-            <button>{{ model['model'] }}</button>
-        </a>
-        <!-- <form>
-            <input type="submit" name="go_to_model" value="{{ model['title'] }}">{{ model['title'] }}</button>
-         </form> -->
-         <!-- <a href="{{ url_for('model', model_id=model['id']) }}">
-            {{ model['title'] }}
-        </a> -->
-        <!-- <a href="{{ url_for('model', model_id=model['id']) }}">
-            <h2>{{ model['model'] }}</h2>
-        </a> -->
-        <hr>
-    {% endfor %}
+    <form id="select_models" method="POST" action="{{ url_for('model') }}">
+        <select name="models" method="GET">
+            <option value="Decision Tree Regressor" selected>Decision Tree Regressor</option>
+              <option value="Random Forest Regressor">Random Forest Regressor</option>
+        </select>
+
+        <select name="imputer" method="GET">
+            <option value="Simple Imputer" selected>Simple Imputer</option>
+            <option value="Drop NAs">Drop NAs</option>
+            <option value="Simple Imputer with extension">Simple Imputer with extension</option>
+        </select>
+
+        <br>
+        <button type="submit">Run Model</button>
+    </form>
+    
+    <hr>
 {% endblock %}

@@ -13,13 +13,13 @@ import datetime
 
 # class myRandomForest(models.Model):
 class myRandomForest:
-    __name__='my.model'
 
-    def __init__(self,train_file,test_file,prediction_column,prediction_key=None):
+    def __init__(self,imputer,train_file,test_file,prediction_column,prediction_key=None):
         self.train_file=train_file
         self.test_file=test_file
         self.prediction_column=prediction_column
         self.prediction_key=prediction_key
+        self.imputer=imputer
 
     def get_info(self):
         train_csv=self.train_file
@@ -59,9 +59,7 @@ class myRandomForest:
         test_X=test_data[numerical_cols+low_cardinality_cols+high_cardinality_cols]
 
         numerical_transformer=Pipeline([('imputer',SimpleImputer(strategy='median'))])
-
         ordinal_categorical_transformer=Pipeline(steps=[('imputer',SimpleImputer(strategy='most_frequent')),('ordinal_encoder',OrdinalEncoder(handle_unknown='ignore'))])
-
         onehot_categorical_transformer=Pipeline(steps=[('imputer',SimpleImputer(strategy='most_frequent')),('onehot',OneHotEncoder(handle_unknown='ignore'))])
 
         preprocessor=ColumnTransformer(transformers=[
@@ -94,23 +92,27 @@ class myRandomForest:
         folder_path="/".join(train_csv.split("/")[:-1])
         predictions_df.to_csv(folder_path+'/random_forest_predictions.csv',index=False)
 
+        return predictions_df
+
 #Titanic competition
-# call1=myRandomForest("data/titanic_data/train.csv","data/titanic_data/test.csv","Survived","PassengerId")
-# call1.startPipeline()
+def checkTitanic(imputer):
+    dt_start = datetime.datetime.now().strftime("%H:%M:%S")
+    print("dt_start",dt_start)
+    call1=myRandomForest(imputer,"data/titanic_data/train.csv","data/titanic_data/test.csv","Survived","PassengerId")
+    df=call1.startPipeline()
+    dt_end = datetime.datetime.now().strftime("%H:%M:%S")
+    print(dt_end)
+
+    return df
 
 #Store sales competition
 # @api.model
 def checkSales():
     dt_start = datetime.datetime.now().strftime("%H:%M:%S")
     print("dt_start",dt_start)
-    # call1=myRandomForest("data/store-sales-time-series-forecasting/train.csv","data/store-sales-time-series-forecasting/test.csv","sales","id")
-    # call1.startPipeline()
-    call1=myRandomForest("data/titanic_data/train.csv","data/titanic_data/test.csv","Survived","PassengerId")
-    call1.startPipeline()
+    call1=myRandomForest("data/store-sales-time-series-forecasting/train.csv","data/store-sales-time-series-forecasting/test.csv","sales","id")
+    df=call1.startPipeline()
     dt_end = datetime.datetime.now().strftime("%H:%M:%S")
     print(dt_end)
 
-    # data={"yay":"no"}
-    # return data
-
-checkSales()
+    return df

@@ -3,7 +3,6 @@ import sqlite3
 from flask import Flask, render_template, request, url_for, flash, redirect
 from sqlalchemy import false
 from werkzeug.exceptions import abort
-import DecisionTreeRegressor.simpleimputer as dtree
 import RandomForestRegressor.simpleimputer as rforest
 import pandas as pd
 
@@ -12,10 +11,10 @@ def get_db_connection():
     conn.row_factory=sqlite3.Row
     return conn
 
-def get_model(model_id):
+def get_model(model_name):
     conn = get_db_connection()
-    model = conn.execute('SELECT * FROM model WHERE id = ?',
-                        (model_id,)).fetchone()
+    model = conn.execute('SELECT * FROM model WHERE model = ?',
+                        (model_name,)).fetchone()
     conn.close()
     if model is None:
         abort(404)
@@ -31,26 +30,29 @@ def index():
     conn.close()
     return render_template('index.html',models=models)
 
-@app.route('/<int:model_id>', methods=('GET', 'POST'))
-def model(model_id):
-    model = get_model(model_id)
-    print("entered")
+@app.route('/model', methods=('GET', 'POST'))
+# @app.route('/model', methods=('GET', 'POST'))
+def model():
+    model_name=request.form.get('models')
+    imputer=request.form.get('imputer')
+    
+    model = get_model(model_name)
+    model_id=model['id']
 
     result="result"
-    if request.method == 'GET':
+    if request.method == 'POST':
         df=pd.DataFrame()
         if model_id==2:
-            print(model_id)
-            rforest.checkSales()
-            df=pd.read_csv('data/store-sales-time-series-forecasting/random_forest_predictions.csv')
+            df=rforest.checkTitanic(imputer)
             result=df.to_string(index=False)
+
     conn = get_db_connection()
     conn.execute('UPDATE model SET predictions = ?'
                     ' WHERE id = ?',
                     (result, model_id,))
     conn.commit()
     conn.close()
-    model = get_model(model_id)
+    model = get_model(model_name)
     
     #     #     return redirect(url_for('index'))
     return render_template('model.html', model=model)

@@ -6,6 +6,8 @@ from sklearn.tree import DecisionTreeRegressor
 # from sklearn.metrics import mean_absolute_error
 from sklearn.impute import SimpleImputer
 
+class myDecisionTree():
+    
 train_csv="data/titanic_data/train.csv"
 test_file="data/titanic_data/test.csv"
 
